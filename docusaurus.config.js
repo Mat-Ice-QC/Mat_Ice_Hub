@@ -122,8 +122,9 @@ const config = {
         copyright: ` <a href="https://www.gnu.org/licenses/agpl-3.0.txt">AGPL-3.0</a> Mat-Ice Hub, Built with <a href="https://docusaurus.io/">Docusaurus</a>.`,
       },
       prism: {
-        theme: prismThemes.github,
-        darkTheme: prismThemes.dracula,
+        theme: prismThemes.coy,
+        darkTheme: prismThemes.twilight,
+        additionalLanguages: ['powershell','bash'],
       },
     }),
 };
