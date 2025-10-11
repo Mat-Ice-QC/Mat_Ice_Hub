@@ -1,0 +1,207 @@
+
+
+# Rancher RKE2 Single-Node Installation Guide
+
+This guide explains **how to install Rancher RKE2** (Rancher Kubernetes Engine 2) on a **single-node** system, including Helm, Cert-Manager, and Rancher UI setup.
+
+
+
+## 1. System Requirements
+
+* **OS:** Ubuntu 20.04+ / 22.04, Rocky Linux, AlmaLinux, CentOS 8+
+* **Arch:** x86_64 or ARM64
+* **Ports:**
+
+  * 6443/tcp — Kubernetes API
+  * 9345/tcp — RKE2 internal communication
+  * 80/443/tcp — Rancher web interface
+
+Make sure no other web server (like Nginx or Apache) is using ports **80** or **443**.
+
+---
+
+## 2. Install RKE2
+
+Run the following to install **RKE2**:
+
+```bash
+curl -sfL https://get.rke2.io | sh -
+```
+
+Enable and start the RKE2 server:
+
+```bash
+sudo systemctl enable rke2-server.service
+sudo systemctl start rke2-server.service
+sudo systemctl status rke2-server.service
+```
+
+---
+
+## 3. Configure kubectl
+
+RKE2 provides a kubeconfig file at `/etc/rancher/rke2/rke2.yaml`.
+
+Set it up for your user:
+
+```bash
+mkdir -p $HOME/.kube
+sudo cp /etc/rancher/rke2/rke2.yaml $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+export KUBECONFIG=$HOME/.kube/config
+```
+
+Test your cluster:
+
+```bash
+kubectl get nodes
+kubectl get pods -A
+```
+
+Your single node should appear as **Ready**.
+
+---
+
+## 🪄 4. Install kubectl and Helm (if missing)
+
+If `kubectl` or `helm` commands are not found:
+
+```bash
+# Install kubectl
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+chmod +x kubectl
+sudo mv kubectl /usr/local/bin/
+
+# Install Helm
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+```
+
+Verify:
+
+```bash
+kubectl version --client
+helm version
+```
+
+---
+
+## 5. Install Cert-Manager
+
+Rancher requires **Cert-Manager** to handle TLS certificates.
+
+```bash
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.0/cert-manager.crds.yaml
+kubectl create namespace cert-manager
+helm repo add jetstack https://charts.jetstack.io
+helm repo update
+helm install cert-manager jetstack/cert-manager \
+  --namespace cert-manager \
+  --version v1.15.0
+```
+
+Wait for all pods:
+
+```bash
+kubectl get pods -n cert-manager
+```
+
+Ensure all are in `Running` or `Completed` state.
+
+---
+
+## 6. Prepare Hostname for Rancher
+
+Rancher **requires a valid DNS name**, not an IP.
+
+Edit your `/etc/hosts` file (on both server and client machines):
+
+```bash
+sudo nano /etc/hosts
+```
+
+Add this line:
+
+```
+192.168.2.190  rancher.local
+```
+
+Save and close.
+
+---
+
+## 7. Install Rancher
+
+Create the namespace and deploy Rancher via Helm:
+
+```bash
+kubectl create namespace cattle-system
+helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
+helm repo update
+helm install rancher rancher-latest/rancher \
+  --namespace cattle-system \
+  --set hostname=rancher.local
+```
+
+Check the deployment:
+
+```bash
+kubectl -n cattle-system get pods
+```
+
+Wait for all `rancher-*` pods to be **Running**.
+
+---
+
+## 8. Verify Installation
+
+Access Rancher from your browser:
+
+```
+https://rancher.local
+```
+
+If prompted with a security warning, accept the self-signed certificate.
+
+---
+
+## ⚠️ Troubleshooting
+
+### 404 Nginx or Blank Page
+
+* Check that **no other Nginx** is running:
+
+  ```bash
+  sudo lsof -i :80
+  sudo lsof -i :443
+  ```
+
+  If found, stop it:
+
+  ```bash
+  sudo systemctl stop nginx
+  ```
+
+* Ensure Rancher ingress has the right hostname:
+
+  ```bash
+  kubectl -n cattle-system get ingress
+  ```
+
+### Cert-Manager Not Ready
+
+Wait a few minutes for pods to initialize, then re-run the Rancher installation.
+
+---
+
+## Summary
+
+* Installed **RKE2** single-node cluster.
+* Set up **kubectl** and **Helm**.
+* Installed **Cert-Manager** for TLS.
+* Deployed **Rancher** with a DNS hostname.
+
+Access Rancher at: [https://rancher.local](https://rancher.local)
+
+---
+
+*Your Rancher RKE2 single-node environment is now fully operational!*

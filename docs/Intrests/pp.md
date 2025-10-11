@@ -1,0 +1,1 @@
+here is a colection of pages that describe my, expertise / intrests / dabling, into all sorts of subjects, companies, software and hardware.
