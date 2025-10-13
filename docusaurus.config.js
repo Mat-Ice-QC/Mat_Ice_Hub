@@ -64,7 +64,7 @@ const config = {
         name: 'Mat Ice Hub',
         url: 'https://www.matice.ca/',
         logo: 'https://matice.ca/img/fleur.svg',
-        description: "The matice Hub"
+        description: "The Mat Ice Hub"
       }),
     },
   ],
@@ -95,31 +95,57 @@ const config = {
         }
       },
       navbar: {
-        title: 'Mat-Ice Hub',
+        title: 'Mat Ice Hub',
         
         items: [
           {
             type: "doc",
-            docId: "documentation/Documentation",
+            docId: "scripting/scripting",
             position: "left",
-            label: "Documentation",
+            label: "Scripting",
           },
+          
+
           {
             type: "doc",
-            docId: "Intrests/pp",
+            docId: "implementations/implementations",
+            position: "left",
+            label: "Implementations",
+          },
+
+          {
+            type: "doc",
+            docId: "myservers/myservers",
+            position: "left",
+            label: "My Servers",
+          },
+
+          {
+            type: "doc",
+            docId: "intrests/intrests",
             position: "left",
             label: "Intrests",
+          },
+
+          {
+            type: "doc",
+            docId: "cooking/cooking",
+            position: "right",
+            label: "Cooking",
           },
           {
             href: 'https://github.com/Mat-Ice-QC',
             label: 'GitHub',
             position: 'right',
           },
+
+          
+
         ],
       },
       footer: {
         style: 'dark',
-        copyright: ` <a href="https://www.gnu.org/licenses/agpl-3.0.txt">AGPL-3.0</a> Mat-Ice Hub, Built with <a href="https://docusaurus.io/">Docusaurus</a>.`,
+        copyright: ` <a href="https://www.gnu.org/licenses/agpl-3.0.txt">AGPL-3.0</a> Mat Ice Hub, Built with <a href="https://docusaurus.io/">Docusaurus</a>.`,
       },
       prism: {
         theme: prismThemes.coy,

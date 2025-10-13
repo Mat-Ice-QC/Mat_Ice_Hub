@@ -3,8 +3,12 @@ pagination_next: null
 pagination_prev: null
 ---
 
+# My Servers
+
+Here is my hardware stack 
 
 
+IN CONSTRUCTION...
 
 import DocCardList from '@theme/DocCardList'; 
 import { useCurrentSidebarCategory } from '@docusaurus/plugin-content-docs/client';
@@ -12,7 +16,7 @@ import { useCurrentSidebarCategory } from '@docusaurus/plugin-content-docs/clien
 export const DocList = () => {
   const category = useCurrentSidebarCategory();
   return (
-    <DocCardList items={category.items.filter(item => item.label !== 'Documentation')} />
+    <DocCardList items={category.items.filter(item => item.label !== 'My Servers')} />
   );
 };
 

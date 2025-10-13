@@ -3,14 +3,10 @@ pagination_next: null
 pagination_prev: null
 ---
 
-# Documentation Overview
+# Scripting
 
-For now, I have these types of documentations.
+This section contains a collection of scripts I have developed. Unless specified otherwise, all scripts are licensed under the AGPL v3.
 
-A French translation and more types of doc is coming soon.
-
-
----
 
 import DocCardList from '@theme/DocCardList'; 
 import { useCurrentSidebarCategory } from '@docusaurus/plugin-content-docs/client';
@@ -18,13 +14,8 @@ import { useCurrentSidebarCategory } from '@docusaurus/plugin-content-docs/clien
 export const DocList = () => {
   const category = useCurrentSidebarCategory();
   return (
-    <DocCardList
-      items={category.items.filter(
-        (item) => item.label !== 'Documentation Overview'
-      )}
-    />
+    <DocCardList items={category.items.filter(item => item.label !== 'Scripting')} />
   );
 };
 
 <DocList />
-
