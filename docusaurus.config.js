@@ -42,17 +42,7 @@ const config = {
     ],
   ],
 
-  // ADDED: headTags from the first snippet
   headTags: [
-    // Declare a <link> preconnect tag
-    {
-      tagName: 'link',
-      attributes: {
-        rel: 'preconnect',
-        href: 'https://example.com',
-      },
-    },
-    // Declare some json-ld structured data
     {
       tagName: 'script',
       attributes: {
@@ -72,7 +62,6 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
-      // ADDED: metadata from the first snippet
       metadata: [
         { name: 'keywords', content: 'documentation, tech, unifi, scripting, powershell' },
         { property: 'og:url', content: 'https://matice.ca' },
@@ -111,6 +100,13 @@ const config = {
             docId: "implementations/implementations",
             position: "left",
             label: "Implementations",
+          },
+
+          {
+            type: "doc",
+            docId: "general/general",
+            position: "left",
+            label: "General Documentation",
           },
 
           {
