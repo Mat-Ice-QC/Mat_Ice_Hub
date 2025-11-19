@@ -1,0 +1,111 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import Chartyaml from './_chartmc.yaml.mdx';
+import Valuesyaml from './_values.yaml.mdx';
+import Deploymentyaml from './_deployment.yaml.mdx';
+import Serviceyaml from './_service.yaml.mdx';
+import Pvyaml from './_pv.yaml.mdx';
+
+
+
+# Minecraft Kubernetes Helm Chart Guide
+
+## Overview
+
+This document explains all the Helm chart components used to deploy a
+Minecraft Java Edition server on Kubernetes with host-mounted storage
+and RCON support.
+
+## Chart Structure
+
+``` plaintext
+    minecraft-server/
+    ├─ chart.yaml
+    ├─ values.yaml
+    └─ templates/
+        ├─ deployment.yaml
+        ├─ service.yaml
+        ├─ pv.yaml
+        └─ pvc.yaml
+```
+-------------------------------------------------------------------------------
+
+<Tabs>
+
+  <TabItem value="Chart.yaml" label="Chart.yaml" default>
+    <Chartyaml />
+  </TabItem>
+  <TabItem value="values.yaml" label="values.yaml">
+    <Valuesyaml />
+  </TabItem>
+  <TabItem value="deployment.yaml" label="deployment.yaml">
+    <Deploymentyaml />
+  </TabItem>
+  <TabItem value="service.yaml" label="service.yaml">
+    <Serviceyaml />
+  </TabItem>
+  <TabItem value="pv.yaml" label="pv.yaml">
+    <Pvyaml />
+  </TabItem>
+</Tabs>
+
+
+
+-------------------------------------------------------------------------------
+
+## How to Deploy
+
+### 1. Prepare Host Directory
+
+``` bash
+sudo mkdir -p /mnt/DATA/minecraft
+sudo chmod -R 777 /mnt/DATA/minecraft
+```
+
+### 2. Add your Minecraft server JAR
+
+Place your `server.jar` into:
+
+    /mnt/DATA/minecraft/server.jar
+
+
+### 3. Install the Helm Chart
+
+``` bash
+helm install mc ./minecraft-server -n minecraft --create-namespace
+```
+
+### 4. Check Deployment
+
+``` bash
+kubectl get pods -n minecraft
+kubectl logs -f deployment/minecraft-server -n minecraft
+```
+
+### 5. Edit `server.properties`
+
+Example:
+``` plaintext
+    enable-rcon=true
+    rcon.port=25575
+    rcon.password=SuperSecret123
+    rcon.ip=192.168.2.190
+    server-ip=192.168.2.10
+    server-port=25565
+``` 
+Save it to:
+
+    /mnt/DATA/minecraft/server.properties
+
+### 6. Connect to the Server
+
+Use:
+
+    192.168.2.10:25565
+
+### 7. RCON Access
+
+    192.168.2.190:25575
+    password: SuperSecret123
+
+------------------------------------------------------------------------

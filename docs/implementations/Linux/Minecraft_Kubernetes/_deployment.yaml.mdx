@@ -1,0 +1,49 @@
+
+## Deployment Explanation
+
+The Deployment runs the Minecraft server and mounts your host directory:
+
+### `deployment.yaml`
+
+``` yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minecraft-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minecraft-server
+  template:
+    metadata:
+      labels:
+        app: minecraft-server
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+        - name: minecraft
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          workingDir: /data
+          command: ["java"]
+          args: ["-Xmx{{ .Values.minecraft.memoryMax }}", "-Xms{{ .Values.minecraft.memoryMin }}",
+                 "-jar", "{{ .Values.minecraft.jarFile }}", "nogui"]
+          volumeMounts:
+            - name: minecraft-data
+              mountPath: /data
+      volumes:
+        - name: minecraft-data
+          hostPath:
+            path: {{ .Values.persistence.hostPath }}
+```
+
+### Purpose:
+
+-   `hostNetwork: true` binds Minecraft directly to host IPs.
+-   `/mnt/DATA/minecraft` on the host is mapped to `/data` in the
+    container.
+-   Minecraft server reads and writes files directly in the host
+    directory.
+-   `server.jar` must exist in `/mnt/DATA/minecraft`.
