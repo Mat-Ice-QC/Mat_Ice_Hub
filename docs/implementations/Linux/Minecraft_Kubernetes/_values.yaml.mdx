@@ -1,0 +1,32 @@
+
+### `values.yaml`
+
+This file contains all configurable values used in the chart.
+
+For now the rcon binds to .10 and not .190 idk why yet. 
+
+Important fields:
+
+``` yaml
+image:
+  repository: eclipse-temurin
+  tag: latest
+  pullPolicy: IfNotPresent
+
+minecraft:
+  memoryMax: 15G
+  memoryMin: 8G
+  jarFile: server.jar
+  rconPassword: "SuperSecret123"
+
+service:
+  type: NodePort
+  port: 25565
+  nodePort: 32565
+  bindIP: 192.168.2.10
+  rconBindIP: 192.168.2.190
+  rconPort: 25575
+
+persistence:
+  hostPath: /mnt/DATA/minecraft
+```

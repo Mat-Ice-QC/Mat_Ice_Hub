@@ -1,0 +1,25 @@
+
+## Service Explanation
+
+### `service.yaml`
+
+``` yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: minecraft-service
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: minecraft-server
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.port }}
+      nodePort: {{ .Values.service.nodePort }}
+```
+
+### Purpose:
+
+-   Exposes Minecraft to the network via NodePort.
+-   Since `hostNetwork: true`, the server also binds directly to the
+    host IP.
