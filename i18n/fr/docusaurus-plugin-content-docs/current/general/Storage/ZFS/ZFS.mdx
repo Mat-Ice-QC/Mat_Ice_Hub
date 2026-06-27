@@ -1,0 +1,22 @@
+---
+pagination_next: null
+pagination_prev: null
+---
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import ZfsBasics from './_zfs_basics.mdx';
+import ZfsInstall from './_zfs_install.mdx';
+import ZfsRaidz from './_zfs_raidz.mdx';
+
+
+<Tabs>
+  <TabItem value="Bases" label="Bases" default>
+    <ZfsBasics />
+  </TabItem>
+  <TabItem value="Installation" label="Installation">
+    <ZfsInstall />
+  </TabItem>
+  <TabItem value="RaidZ" label="RaidZ ?">
+    <ZfsRaidz />
+  </TabItem>
+</Tabs>

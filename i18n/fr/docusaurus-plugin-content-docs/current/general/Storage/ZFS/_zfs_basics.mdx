@@ -1,0 +1,70 @@
+
+# ZFS : Les bases
+
+
+## Qu'est-ce que ZFS ?
+**ZFS (Zettabyte File System)** est un système de fichiers combiné et gestionnaire de volumes logiques, développé à l'origine par Sun Microsystems. Il est conçu pour offrir une grande capacité de stockage, une fiabilité élevée et une gestion simplifiée.
+
+---
+
+## Caractéristiques principales
+
+### 1. **Stockage en pool**
+Contrairement aux systèmes de fichiers traditionnels qui gèrent les disques individuellement, ZFS utilise un **pool de stockage (zpool)**.  
+Cela permet de regrouper plusieurs disques ensemble, le système de fichiers allouant dynamiquement l'espace sur ceux-ci selon les besoins.
+
+### 2. **Intégrité des données**
+ZFS utilise des **sommes de contrôle** pour vérifier l'intégrité des données.  
+Chaque fois que des données sont lues, ZFS vérifie leur somme de contrôle pour s'assurer qu'elles n'ont pas été corrompues — s'il détecte une erreur et qu'une redondance est disponible, il répare automatiquement les données.
+
+### 3. **Instantanés et clones**
+- **Instantanés** : Points dans le temps en lecture seule du système de fichiers qui peuvent être utilisés pour les sauvegardes ou les restaurations.
+- **Clones** : Copies modifiables des instantanés, utiles pour les tests ou la gestion de versions de données.
+
+### 4. **Compression et déduplication**
+ZFS prend en charge la **compression à la volée** et la **déduplication** pour économiser l'espace disque et optimiser les performances.
+
+### 5. **RAID-Z**
+ZFS introduit **RAID-Z**, une forme améliorée de RAID qui protège contre la perte de données due aux pannes de disques et élimine le problème du « write hole » présent dans le RAID traditionnel.
+
+---
+
+## Structure de base
+
+- **Pool (zpool)** → Groupe de disques gérés ensemble.
+- **Dataset** → Un système de fichiers ou volume au sein du pool.
+- **Instantané/Clone** → Versions de données ou copies de datasets.
+
+---
+
+## Commandes ZFS de base
+
+1. **Créer un pool ZFS :**
+
+```bash
+sudo zpool create mypool /dev/sdb
+```
+
+2. **Vérifier l'état du pool :**
+
+```bash
+sudo zpool status
+```
+
+3. **Créer un système de fichiers ZFS :**
+
+```bash
+sudo zfs create mypool/mydata
+```
+
+4. **Lister les systèmes de fichiers ZFS :**
+
+```bash
+zfs list
+```
+
+5. **Détruire un pool ZFS (Attention : Perte de données !) :**
+
+```bash
+sudo zpool destroy mypool
+```

@@ -19,11 +19,23 @@ const config = {
   baseUrl: '/',
 
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'warn',
+    },
+  },
 
   i18n: {
     defaultLocale: 'en',
-    locales: ['en'],
+    locales: ['en', 'fr'],
+    localeConfigs: {
+      en: {
+        label: 'English',
+      },
+      fr: {
+        label: 'Français',
+      },
+    },
   },
 
   presets: [
@@ -135,7 +147,10 @@ const config = {
             position: 'right',
           },
 
-          
+          {
+            type: 'localeDropdown',
+            position: 'right',
+          },
 
         ],
       },

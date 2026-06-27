@@ -1,0 +1,34 @@
+{
+  "title": {
+    "message": "Mat Ice Hub",
+    "description": "The title in the navbar"
+  },
+  "item.label.Scripting": {
+    "message": "Scripts",
+    "description": "Navbar item with label Scripting"
+  },
+  "item.label.Implementations": {
+    "message": "Implémentations",
+    "description": "Navbar item with label Implementations"
+  },
+  "item.label.General Documentation": {
+    "message": "Documentation Générale",
+    "description": "Navbar item with label General Documentation"
+  },
+  "item.label.My Servers": {
+    "message": "Mes Serveurs",
+    "description": "Navbar item with label My Servers"
+  },
+  "item.label.Intrests": {
+    "message": "Intérêts",
+    "description": "Navbar item with label Intrests"
+  },
+  "item.label.Cooking": {
+    "message": "Cuisine",
+    "description": "Navbar item with label Cooking"
+  },
+  "item.label.GitHub": {
+    "message": "GitHub",
+    "description": "Navbar item with label GitHub"
+  }
+}

@@ -1,0 +1,95 @@
+
+            # Pontage d'interfaces
+
+            Le pontage réseau est une façon de créer un commutateur virtuel qui connecte plusieurs interfaces réseau (physiques ou virtuelles) sur le même hôte. C'est un besoin courant pour les technologies de virtualisation et de conteneurs afin de permettre aux systèmes invités de se connecter au réseau externe.
+
+            Avec Netplan, la création d'un pont implique trois étapes clés :
+
+            1. Désactiver la configuration réseau sur la/les interface(s) physique(s) que vous souhaitez inclure dans le pont.
+            2. Définir l'interface pont, en spécifiant les interfaces physiques comme ses membres.
+            3. Configurer l'adresse IP, le DHCP et les autres paramètres réseau sur la nouvelle interface pont, pas sur les interfaces physiques.
+
+            ---
+
+            ## Exemple 1 : Pont avec DHCP
+
+            Cet exemple crée un pont nommé `br0` et utilise le DHCP pour attribuer automatiquement une adresse IP. Il désactive le DHCP sur l'interface physique `enp3s0`, la rendant membre du pont.
+
+            **Fichier :** `/etc/netplan/50-cloud-init.yaml`
+
+            ```yaml
+            network:
+            version: 2
+            renderer: networkd
+            ethernets:
+                enp3s0:
+                dhcp4: false
+                dhcp6: false
+            bridges:
+                br0:
+                interfaces: [enp3s0]
+                dhcp4: true
+            ```
+
+            ### Étapes d'application
+
+            1. Créez le fichier avec la configuration ci-dessus, ou modifiez votre fichier Netplan existant.  
+            2. Appliquez la configuration :  
+            ```bash
+            sudo netplan apply
+            ```
+            3. Vérifiez le pont :  
+            ```bash
+            ip a
+            ```
+            Confirmez que la nouvelle interface `br0` a une adresse IP.  
+
+            ---
+
+            ## Exemple 2 : Pont avec IP statique
+
+            Pour une adresse IP fixe, vous désactivez le DHCP à la fois sur l'interface physique et sur le pont lui-même. L'IP, la passerelle et le DNS sont ensuite configurés sur le pont.
+
+            **Fichier :** `/etc/netplan/50-cloud-init.yaml`
+
+            ```yaml
+            network:
+            version: 2
+            renderer: networkd
+            ethernets:
+                enp3s0:
+                dhcp4: false
+            bridges:
+                br0:
+                interfaces: [enp3s0]
+                dhcp4: false
+                addresses:
+                    - 192.168.1.100/24
+                routes:
+                    - to: default
+                    via: 192.168.1.1
+                nameservers:
+                    addresses:
+                    - 8.8.8.8
+                    - 8.8.4.4
+            ```
+
+            Cet exemple d'IP statique configure les adresses IP, les routes et les serveurs DNS directement sous la définition du pont `br0`.
+
+            Pour ponter plusieurs interfaces physiques, listez-les sous la clé `interfaces` du pont, en désactivant le DHCP sur chacune.
+
+            Avant d'appliquer, testez avec :  
+            ```bash
+            sudo netplan try
+            ```
+
+            Puis appliquez définitivement :  
+            ```bash
+            sudo netplan apply
+            ```
+
+            Vérifiez la configuration :  
+            ```bash
+            netplan status
+            ip a
+            ```

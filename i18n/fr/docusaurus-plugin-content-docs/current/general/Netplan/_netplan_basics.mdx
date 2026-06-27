@@ -1,0 +1,30 @@
+# Bases
+
+            Netplan est un utilitaire de configuration réseau puissant et facile à utiliser pour Linux, notamment sur Ubuntu 17.10 et versions ultérieures. Il utilise un format YAML lisible pour décrire les interfaces réseau, rendant la configuration simple et cohérente.
+
+            ---
+
+            ### Comment fonctionne Netplan
+
+            1.  **Fichiers YAML** : Vous définissez votre configuration réseau dans des fichiers `.yaml` stockés dans le répertoire `/etc/netplan/`.
+            2.  **Moteurs de rendu** : Netplan lit ces fichiers et génère la configuration nécessaire pour l'un de ses moteurs de rendu backend, soit `systemd-networkd` (pour les serveurs) ou `NetworkManager` (pour les postes de travail).
+            3.  **Appliquer la configuration** : La commande `sudo netplan apply` prend la configuration générée et l'applique à votre système.
+
+            ### Structure des fichiers
+
+            Les fichiers de configuration Netplan suivent une structure hiérarchique simple.
+
+            ```yaml
+            network:
+            version: 2
+            renderer: networkd # ou NetworkManager
+            ethernets:
+                enp3s0:
+                ...
+            bridges:
+                br0:
+                ...
+            wifis:
+                wlan0:
+                ...
+            ```    

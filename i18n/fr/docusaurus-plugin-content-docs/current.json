@@ -1,0 +1,62 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.Scripting.category.Scripting": {
+    "message": "Scripts",
+    "description": "The label for category 'Scripting' in sidebar 'Scripting'"
+  },
+  "sidebar.Scripting.category.Powershell": {
+    "message": "Powershell",
+    "description": "The label for category 'Powershell' in sidebar 'Scripting'"
+  },
+  "sidebar.Scripting.category.Unifi": {
+    "message": "Unifi",
+    "description": "The label for category 'Unifi' in sidebar 'Scripting'"
+  },
+  "sidebar.Scripting.category.Windows": {
+    "message": "Windows",
+    "description": "The label for category 'Windows' in sidebar 'Scripting'"
+  },
+  "sidebar.MyServers.category.My Servers": {
+    "message": "Mes Serveurs",
+    "description": "The label for category 'My Servers' in sidebar 'MyServers'"
+  },
+  "sidebar.implementations.category.Implementations": {
+    "message": "Implémentations",
+    "description": "The label for category 'Implementations' in sidebar 'implementations'"
+  },
+  "sidebar.implementations.category.Linux": {
+    "message": "Linux",
+    "description": "The label for category 'Linux' in sidebar 'implementations'"
+  },
+  "sidebar.implementations.category.Minecraft_Kubernetes": {
+    "message": "Minecraft Kubernetes",
+    "description": "The label for category 'Minecraft_Kubernetes' in sidebar 'implementations'"
+  },
+  "sidebar.cooking.category.Cooking": {
+    "message": "Cuisine",
+    "description": "The label for category 'Cooking' in sidebar 'cooking'"
+  },
+  "sidebar.cooking.category.Drinks": {
+    "message": "Boissons",
+    "description": "The label for category 'Drinks' in sidebar 'cooking'"
+  },
+  "sidebar.general.category.General Documentation": {
+    "message": "Documentation Générale",
+    "description": "The label for category 'General Documentation' in sidebar 'general'"
+  },
+  "sidebar.general.category.Kubernetes": {
+    "message": "Kubernetes",
+    "description": "The label for category 'Kubernetes' in sidebar 'general'"
+  },
+  "sidebar.general.category.Storage": {
+    "message": "Stockage",
+    "description": "The label for category 'Storage' in sidebar 'general'"
+  },
+  "sidebar.general.category.RAID": {
+    "message": "RAID",
+    "description": "The label for category 'RAID' in sidebar 'general'"
+  }
+}
