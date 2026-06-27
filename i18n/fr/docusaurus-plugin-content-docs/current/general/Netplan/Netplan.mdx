@@ -1,0 +1,25 @@
+---
+pagination_next: null
+pagination_prev: null
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import NetplanBasics from './_netplan_basics.mdx';
+import NetplanBonding from './_netplan_bonding.mdx';
+import NetplanBridging from './_netplan_bridging.mdx';
+
+
+# Netplan
+
+<Tabs>
+  <TabItem value="Bases" label="Bases" default>
+    <NetplanBasics />
+  </TabItem>
+  <TabItem value="Agrégation d'interfaces" label="Agrégation d'interfaces">
+    <NetplanBonding />
+  </TabItem>
+  <TabItem value="Pontage d'interfaces" label="Pontage d'interfaces">
+    <NetplanBridging />
+  </TabItem>
+</Tabs>

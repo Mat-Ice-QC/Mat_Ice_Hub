@@ -1,0 +1,191 @@
+---
+title: "Désactiver les microphones par Regex"
+description: "Un script PowerShell qui désactive les microphones via les clés de registre en utilisant le filtrage par regex — parce que parfois on ne veut pas que ce micro soit actif."
+license: "AGPL-3.0-or-later"
+author: "Mat Ice"
+date: "2025-10-10"
+---
+
+# Désactiver les microphones par Regex
+
+> _"J'avais besoin d'un moyen de désactiver le micro de ma caméra avec PowerShell...  
+> Ça m'a pris genre 4 heures et du gatorwine🍷.  
+> Alors ouais — regardez pas ça de trop près."_  
+> — **Mat Ice**, 2025
+
+---
+
+## Ce que ça fait
+
+Ce script PowerShell recherche tous les **appareils microphone** sur votre système Windows, trouve ceux dont le nom correspond à un **pattern regex**, et les **désactive directement dans le Registre Windows**.
+
+C'est plus fiable que d'essayer de les désactiver via PnP ou le Gestionnaire de périphériques quand on travaille dans des environnements verrouillés ou gérés.
+
+---
+
+## Comment ça fonctionne
+
+1. **Définir un pattern Regex**
+
+   ```powershell
+   $regexPattern = "Logi C270"
+   ```
+
+   Cela indique au script quels microphones chercher.  
+   Vous pouvez remplacer `"Logi C270"` par n'importe quelle partie d'un nom de microphone.
+
+2. **Énumérer les périphériques audio**
+
+   ```powershell
+   Get-PnpDevice -Class AudioEndpoint -FriendlyName "*Microphone*"
+   ```
+   Trouve tous les périphériques de capture avec « Microphone » dans leur nom.
+
+3. **Filtrer par Regex et désactiver**
+
+   Pour chaque correspondance, le script trouve son GUID dans le registre et définit la valeur  
+   `DeviceState` à `0x10000001`, le désactivant effectivement.
+
+4. **Gestion gracieuse des erreurs**
+
+   - Avertit si aucun périphérique ne correspond au pattern  
+   - Vous informe si vous n'exécutez pas en tant qu'Administrateur  
+   - Compte le nombre de périphériques désactivés avec succès
+
+---
+
+## Prérequis
+
+- Windows  
+- PowerShell 5.1+  
+- Privilèges Administrateur  
+- Un peu de patience (et optionnellement, du **gatorwine**) 🍷
+
+---
+
+## Utilisation
+
+Lancez PowerShell **en tant qu'Administrateur**, puis :
+
+```powershell
+.\Disable-MicrophonesByRegistry.ps1
+```
+
+Vous verrez quelque chose comme :
+
+```
+[Searching] Looking for microphones...
+[Success] Matching microphones found:
+[Disabled] Microphone: Logi C270
+[Completed] Operation finished. Success: 1, Failed: 0
+```
+
+---
+
+## Script complet
+
+```powershell
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# This file is part of the PowerShell script for disabling microphones by regex pattern via registry.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+<#
+.SYNOPSIS
+    Disables microphones matching a regex pattern via Windows Registry
+
+.DESCRIPTION
+    This script identifies audio capture devices matching the specified regex pattern
+    and disables them by modifying their DeviceState value in Windows Registry.
+    More reliable than PnP methods in managed environments.
+
+.NOTES
+    Author: Mat Ice
+    Date: October 10, 2025
+    License: AGPLv3
+#>
+
+# === CONFIGURATION TO MODIFY HERE ===
+$regexPattern = "Logi C270"
+# =====================================
+
+function Disable-MicrophonesByRegistry {
+    param ([string]$Pattern)
+
+    try {
+        Write-Host "[Searching] Looking for microphones..." -ForegroundColor Cyan
+        $audioDevices = Get-PnpDevice -Class AudioEndpoint -FriendlyName "*Microphone*" -ErrorAction Stop
+
+        $matchingDevices = $audioDevices | Where-Object { $_.FriendlyName -match $Pattern }
+
+        if (-not $matchingDevices) {
+            Write-Host "[Error] No microphones found matching '$Pattern'" -ForegroundColor Red
+            return
+        }
+
+        Write-Host "[Success] Matching microphones found:" -ForegroundColor Green
+        $matchingDevices | Format-Table FriendlyName, Status, InstanceId
+
+        $successCount = 0
+        $failureCount = 0
+
+        foreach ($device in $matchingDevices) {
+            $guidMatch = [regex]::Match($device.InstanceId, '\{[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}')
+            if ($guidMatch.Success) {
+                $deviceIdGuid = $guidMatch.Value
+                $regPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Capture\$deviceIdGuid"
+
+                if (Test-Path $regPath) {
+                    try {
+                        Set-ItemProperty -Path $regPath -Name "DeviceState" -Value 0x10000001 -Type DWord -ErrorAction Stop
+                        Write-Host "[Disabled] Microphone: $($device.FriendlyName)" -ForegroundColor Green
+                        $successCount++
+                    } catch [System.UnauthorizedAccessException] {
+                        Write-Host "[Failed] Insufficient permissions to disable: $($device.FriendlyName)" -ForegroundColor Red
+                        Write-Warning "Access denied to registry path: $regPath"
+                        Write-Warning "Try running PowerShell as Administrator"
+                        $failureCount++
+                    } catch {
+                        Write-Host "[Failed] Could not disable microphone: $($device.FriendlyName)" -ForegroundColor Red
+                        Write-Warning "Error: $($_.Exception.Message)"
+                        $failureCount++
+                    }
+                } else {
+                    Write-Warning "Registry path not found: $regPath"
+                    $failureCount++
+                }
+            } else {
+                Write-Warning "Could not extract GUID for device: $($device.FriendlyName)"
+                $failureCount++
+            }
+        }
+
+        Write-Host "[Completed] Operation finished. Success: $successCount, Failed: $failureCount" -ForegroundColor Cyan
+    } catch {
+        Write-Error "[Exception] An error occurred: $($_.Exception.Message)"
+    }
+}
+
+$isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+if (-not $isAdmin) {
+    Write-Warning "This script requires administrator privileges to modify registry settings."
+    Write-Warning "Please run PowerShell as Administrator and try again."
+}
+
+Write-Host "=== Disabling Microphones via Registry ===" -ForegroundColor Cyan
+Write-Host "Search pattern: $regexPattern" -ForegroundColor Cyan
+Disable-MicrophonesByRegistry -Pattern $regexPattern 
+```
+

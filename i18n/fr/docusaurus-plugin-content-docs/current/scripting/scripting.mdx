@@ -1,0 +1,21 @@
+---
+pagination_next: null
+pagination_prev: null
+---
+
+# Scripts
+
+Cette section contient une collection de scripts que j'ai développés. Sauf indication contraire, tous les scripts sont sous licence AGPL v3.
+
+
+import DocCardList from '@theme/DocCardList'; 
+import { useCurrentSidebarCategory } from '@docusaurus/plugin-content-docs/client';
+
+export const DocList = () => {
+  const category = useCurrentSidebarCategory();
+  return (
+    <DocCardList items={category.items.filter(item => item.label !== 'Scripting')} />
+  );
+};
+
+<DocList />

@@ -1,0 +1,208 @@
+
+
+
+# Guide d'installation Rancher RKE2 sur un seul nœud
+
+Ce guide explique **comment installer Rancher RKE2** (Rancher Kubernetes Engine 2) sur un système à **un seul nœud**, incluant la configuration de Helm, Cert-Manager et l'interface Rancher.
+
+
+
+## 1. Prérequis système
+
+* **OS :** Ubuntu 20.04+ / 22.04, Rocky Linux, AlmaLinux, CentOS 8+
+* **Arch :** x86_64 ou ARM64
+* **Ports :**
+
+  * 6443/tcp — API Kubernetes
+  * 9345/tcp — Communication interne RKE2
+  * 80/443/tcp — Interface web Rancher
+
+Assurez-vous qu'aucun autre serveur web (comme Nginx ou Apache) n'utilise les ports **80** ou **443**.
+
+---
+
+## 2. Installer RKE2
+
+Exécutez la commande suivante pour installer **RKE2** :
+
+```bash
+curl -sfL https://get.rke2.io | sh -
+```
+
+Activez et démarrez le serveur RKE2 :
+
+```bash
+sudo systemctl enable rke2-server.service
+sudo systemctl start rke2-server.service
+sudo systemctl status rke2-server.service
+```
+
+---
+
+## 3. Configurer kubectl
+
+RKE2 fournit un fichier kubeconfig à `/etc/rancher/rke2/rke2.yaml`.
+
+Configurez-le pour votre utilisateur :
+
+```bash
+mkdir -p $HOME/.kube
+sudo cp /etc/rancher/rke2/rke2.yaml $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+export KUBECONFIG=$HOME/.kube/config
+```
+
+Testez votre cluster :
+
+```bash
+kubectl get nodes
+kubectl get pods -A
+```
+
+Votre nœud unique devrait apparaître comme **Ready**.
+
+---
+
+## 4. Installer kubectl et Helm (si manquants)
+
+Si les commandes `kubectl` ou `helm` ne sont pas trouvées :
+
+```bash
+# Installer kubectl
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+chmod +x kubectl
+sudo mv kubectl /usr/local/bin/
+
+# Installer Helm
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+```
+
+Vérifiez :
+
+```bash
+kubectl version --client
+helm version
+```
+
+---
+
+## 5. Installer Cert-Manager
+
+Rancher nécessite **Cert-Manager** pour gérer les certificats TLS.
+
+```bash
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.0/cert-manager.crds.yaml
+kubectl create namespace cert-manager
+helm repo add jetstack https://charts.jetstack.io
+helm repo update
+helm install cert-manager jetstack/cert-manager \
+  --namespace cert-manager \
+  --version v1.15.0
+```
+
+Attendez que tous les pods soient prêts :
+
+```bash
+kubectl get pods -n cert-manager
+```
+
+Assurez-vous que tous sont à l'état `Running` ou `Completed`.
+
+---
+
+## 6. Préparer le nom d'hôte pour Rancher
+
+Rancher **nécessite un nom DNS valide**, pas une adresse IP.
+
+Modifiez votre fichier `/etc/hosts` (sur les machines serveur et client) :
+
+```bash
+sudo nano /etc/hosts
+```
+
+Ajoutez cette ligne :
+
+```
+192.168.2.190  rancher.local
+```
+
+Enregistrez et fermez.
+
+---
+
+## 7. Installer l'interface Rancher
+
+Créez l'espace de noms et déployez l'interface Rancher via Helm :
+
+```bash
+kubectl create namespace cattle-system
+helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
+helm repo update
+helm install rancher rancher-latest/rancher \
+  --namespace cattle-system \
+  --set hostname=rancher.local
+```
+
+Vérifiez le déploiement :
+
+```bash
+kubectl -n cattle-system get pods
+```
+
+Attendez que tous les pods `rancher-*` soient **Running**.
+
+---
+
+## 8. Vérifier l'installation
+
+Accédez à Rancher depuis votre navigateur :
+
+```
+https://rancher.local
+```
+
+Si un avertissement de sécurité apparaît, acceptez le certificat auto-signé.
+
+---
+
+## Dépannage
+
+### Erreur 404 Nginx ou page blanche
+
+* Vérifiez qu'**aucun autre Nginx** ne tourne :
+
+  ```bash
+  sudo lsof -i :80
+  sudo lsof -i :443
+  ```
+
+  Si trouvé, arrêtez-le :
+
+  ```bash
+  sudo systemctl stop nginx
+  ```
+
+* Assurez-vous que l'ingress Rancher a le bon nom d'hôte :
+
+  ```bash
+  kubectl -n cattle-system get ingress
+  ```
+
+### Cert-Manager non prêt
+
+Attendez quelques minutes que les pods s'initialisent, puis relancez l'installation de Rancher.
+
+---
+
+## Résumé
+
+* Installation d'un cluster **RKE2** à un seul nœud.
+* Configuration de **kubectl** et **Helm**.
+* Installation de **Cert-Manager** pour le TLS.
+* Déploiement de **Rancher** avec un nom d'hôte DNS.
+
+Accédez à Rancher à : [https://rancher.local](https://rancher.local)
+
+---
+
+*Votre environnement Rancher RKE2 à un seul nœud est maintenant pleinement opérationnel !*
