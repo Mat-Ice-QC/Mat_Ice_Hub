@@ -31,6 +31,10 @@
     "message": "Linux",
     "description": "The label for category 'Linux' in sidebar 'implementations'"
   },
+  "sidebar.implementations.category.Disk-Hunter": {
+    "message": "Disk Hunter",
+    "description": "The label for category 'Disk-Hunter' in sidebar 'implementations'"
+  },
   "sidebar.implementations.category.Minecraft_Kubernetes": {
     "message": "Minecraft Kubernetes",
     "description": "The label for category 'Minecraft_Kubernetes' in sidebar 'implementations'"
