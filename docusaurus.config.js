@@ -101,6 +101,12 @@ const config = {
         items: [
           {
             type: "doc",
+            docId: "labs/labs",
+            position: "left",
+            label: "Labs",
+          },
+          {
+            type: "doc",
             docId: "scripting/scripting",
             position: "left",
             label: "Scripting",
